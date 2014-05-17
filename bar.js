@@ -69,3 +69,29 @@ svg.selectAll("text")
       "font-size": "11px",
       "font-family": "sans-serif"
    });
+
+
+d3.select("button")
+  .on("click", function() {
+    //New values for dataset
+    dataset = [11, 12, 15, 20, 18, 17, 16, 18, 23, 25,
+                5, 10, 13, 19, 21, 25, 22, 18, 15, 13];
+
+    //Update all rects
+    svg.selectAll("rect")
+       .data(dataset)
+       .attr({
+        "y": function(d) { return height - yScale(d); },
+        "height": function(d) { return yScale(d); },
+        "fill": function(d) { return "rgb(0, 0, " + (d * 10) +")"; }
+       });
+
+    //Update text
+    svg.selectAll("text")
+       .data(dataset)
+       .text(function(d) { return d; })
+       .attr({
+        "x": function(d, i) { return xScale(i) + xScale.rangeBand() / 2; },
+        "y": function(d) { return height - yScale(d) + 14; }
+       });
+  });

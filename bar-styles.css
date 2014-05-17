@@ -9,3 +9,8 @@
   font-family: sans-serif;
   font-size: 11px;
 }
+
+button {
+  float: left;
+  margin-right: 5px;
+}

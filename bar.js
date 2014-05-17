@@ -23,6 +23,10 @@ var xScale = d3.scale.ordinal()
                 .domain(d3.range(dataset.length))
                 .rangeRoundBands([0, width], 0.05)
 
+var yScale = d3.scale.linear()
+               .domain([0, d3.max(dataset)])
+               .range([0, height]);
+
 //Create bars
 var bars = svg.selectAll("rect")
                  .data(dataset)
@@ -34,11 +38,11 @@ bars.attr({
       return xScale(i);
     },
   y: function(d) {
-      return height - d;
+      return height - yScale(d);
     },
   width: xScale.rangeBand(),
   height: function(d) {
-    return d;
+    return yScale(d);
   },
   fill: function() {
       return "#" + (Math.random()*0xFFFFFF<<0).toString(16);
@@ -54,11 +58,12 @@ svg.selectAll("text")
       return d;
    })
    .attr({
+      "text-anchor": "middle",
       x: function(d, i) {
-        return i * (width/dataset.length) + 5;
+        return xScale(i) + xScale.rangeBand() / 2;
       },
       y: function(d) {
-        return height - d + 15;
+        return height - yScale(d) + 14;
       },
       fill: "white",
       "font-size": "11px",

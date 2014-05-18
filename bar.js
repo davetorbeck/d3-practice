@@ -98,11 +98,14 @@ d3.select("button")
     svg.selectAll("text")
        .data(dataset)
        .transition()
-       .duration(900)
+       .duration(500)
        .delay(function(d, i) { return i / dataset.length * 1000; })
        .text(function(d) { return d; })
        .attr({
         "x": function(d, i) { return xScale(i) + xScale.rangeBand() / 2; },
         "y": function(d) { return height - yScale(d) + 14; }
        });
+
+    //Update scale
+    yScale.domain([0, d3.max(dataset)]);
   });

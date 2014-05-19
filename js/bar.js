@@ -2,7 +2,6 @@
 var height = 250;
 var width = 600;
 var barPadding = 1;
-var maxValue = 90;
 
 //Create svg
 var svg = d3.select("body")
@@ -16,7 +15,7 @@ var svg = d3.select("body")
 var dataset = [];
 
 for (var i = 0; i < 20; i++) {
-    dataset.push(Math.ceil(maxValue * Math.random()))
+    dataset.push(Math.ceil(50 * Math.random()))
 }
 
 //Define scale
@@ -72,27 +71,43 @@ svg.selectAll("text")
    });
 
 
+//On click, update with new data
 d3.select("button")
   .on("click", function() {
     //New values for dataset
-    var numValues = dataset.length;                    //Count original length of dataset
-    dataset = [];                                      //Initialize empty array
-    for (var i = 0; i < numValues; i++) {              //Loop numValues times
-      var newNumber = Math.ceil(maxValue * Math.random());   //New random integer (0-99)
-      dataset.push(newNumber);                         //Add new number to array
-    }
+    var maxValue = 60;
+    var newNumber = Math.floor(Math.random() * maxValue);
+    dataset.push(newNumber);
 
+    xScale.domain(d3.range(dataset.length));
+    yScale.domain([0, d3.max(dataset)]);
+
+    bars = svg.selectAll("rect")
+              .data(dataset);
+
+    bars.enter()
+        .append("rect")
+        .attr("x", width)
+        .attr("y", function(d) {
+          return height - yScale(d);
+        })
+        .attr("width", xScale.rangeBand())
+        .attr("height", function(d) {
+          return yScale(d);
+        })
+        .attr("fill", function(d) {
+          return "rgb(0,0, " + (d * 10) + ")";
+        });
+   
     //Update all rects
-    svg.selectAll("rect")
-       .data(dataset)
-       .transition()
-       .delay(function(d, i) { return i / dataset.length * 1000; })
-       .duration(1200)
-       .attr({
-        "y": function(d) { return height - yScale(d); },
-        "height": function(d) { return yScale(d); },
-        "fill": function(d) { return "#" + (Math.random()*0xFFFFFF<<0).toString(16); }
-       });
+    bars.transition()
+        .duration(500)
+        .attr({
+         "x": function(d, i) { return xScale(i); },
+         "y": function(d) { return height - yScale(d); },
+         "height": function(d) { return yScale(d); },
+         "width": xScale.rangeBand()
+        });
 
     //Update text
     svg.selectAll("text")

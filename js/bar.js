@@ -18,7 +18,7 @@ var svg = d3.select("body")
 
 //Random data
 var dataset = [ { key: 0, value: 5},
-                { key: 1, value: 10 },    
+                { key: 1, value: 10 },
                 { key: 2, value: 13 },
                 { key: 3, value: 19 },
                 { key: 4, value: 21 },
@@ -92,17 +92,26 @@ svg.selectAll("text")
 
 
 //On click, update with new data
-d3.select("button")
+d3.selectAll("button")
   .on("click", function() {
-    //New values for dataset
-    // var maxValue = 60;
-    // var newNumber = Math.floor(Math.random() * maxValue);
-    // dataset.push(newNumber);
+    var paragraphID = d3.select(this).attr("id");
 
-    // xScale.domain(d3.range(dataset.length));
-    // yScale.domain([0, d3.max(dataset)]);
+    if (paragraphID === "add") {
+      var maxValue = 60;
+      var newNumber = Math.floor(Math.random() * maxValue);
+      var lastKeyValue = dataset[dataset.length - 1].key;
+      dataset.push({
+        key: lastKeyValue + 1,
+        value: newNumber
+      });
 
-    dataset.shift();
+    } else {
+      dataset.shift();
+    }
+
+    //Update scale
+    yScale.domain([0, d3.max(dataset, function(d) { return d.value; })]);
+    xScale.domain(d3.range(dataset.length));
 
     bars = svg.selectAll("rect")
               .data(dataset, key);
@@ -120,7 +129,7 @@ d3.select("button")
         .attr("fill", function(d) {
           return "rgb(0,0, " + (d.value * 10) + ")";
         });
-   
+
     //Update all rects
     bars.transition()
         .duration(500)
@@ -140,11 +149,11 @@ d3.select("button")
         .remove();
 
     //Update text
-    var text = svg.selectAll("text")
+    var labels = svg.selectAll("text")
                   .data(dataset, key)
-       
-  
-    text.enter()
+
+
+    labels.enter()
         .append("text")
         .text(function(d) {
           return d.value;
@@ -162,19 +171,17 @@ d3.select("button")
           "font-family": "sans-serif"
        });
 
-    text.transition()
+    labels.transition()
         .text(function(d) { return d.value; })
         .attr({
          "x": function(d, i) { return xScale(i) + xScale.rangeBand() / 2; },
          "y": function(d) { return height - yScale(d.value) + 14; }
         });
 
-    text.exit()
+    labels.exit()
         .transition()
         .duration(1000)
         .attr("x", -xScale.rangeBand())
         .remove();
 
-    //Update scale
-    yScale.domain([0, d3.max(dataset, function(d) { return d.value; })]);
   });

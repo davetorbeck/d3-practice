@@ -2,6 +2,7 @@
 var height = 250;
 var width = 600;
 var barPadding = 1;
+var sortOrder = false;
 
 //key function
 var key = function(d) {
@@ -67,7 +68,10 @@ bars.attr({
   fill: function(d) {
       return "rgb(0,0, " + (d.value * 10) + ")";
   }
-});
+}).append("title")
+    .text(function(d) {
+     return "This value is " + d.value;
+    });
 
 //Append data as text to bars
 svg.selectAll("text")
@@ -188,9 +192,15 @@ d3.selectAll("button")
           .remove();
         } else {
 
+          sortOrder = !sortOrder
+
           svg.selectAll("rect")
              .sort(function(a, b) {
-               return d3.ascending(a.value, b.value);
+              if (sortOrder) {
+                return d3.ascending(a.value, b.value);
+              } else {
+                return d3.descending(a.value, b.value);
+              }
              })
              .transition()
              .duration(1000)
@@ -200,10 +210,15 @@ d3.selectAll("button")
 
           svg.selectAll("text")
              .sort(function(a, b) {
-               return d3.ascending(a.value, b.value);
+               if (sortOrder) {
+                 return d3.ascending(a.value, b.value);
+               } else {
+                 return d3.descending(a.value, b.value);
+               }
              })
              .transition()
-             .duration(500)
+             .delay(400)
+             .duration(400)
              .text(function(d) { return d.value; })
              .attr({
                "x": function(d, i) { return xScale(i) + xScale.rangeBand() / 2; },

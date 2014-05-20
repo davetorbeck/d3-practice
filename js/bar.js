@@ -68,10 +68,21 @@ bars.attr({
   fill: function(d) {
       return "rgb(0,0, " + (d.value * 10) + ")";
   }
-}).append("title")
-    .text(function(d) {
-     return "This value is " + d.value;
-    });
+}).on("mouseover", function(d) {
+  var xPosition = parseFloat(d3.select(this).attr("x")) + xScale.rangeBand() / 2;
+  var yPosition = parseFloat(d3.select(this).attr("y")) + 14;
+
+  d3.select("#tooltip")
+    .style("left", xPosition + "px")
+    .style("top", yPosition + "px")
+    .select("#value")
+    .text(d.value);
+
+  d3.select("#tooltip").classed("hidden", false);
+
+}).on("mouseout", function() {
+  d3.select("#tooltip").classed("hidden", true);
+})
 
 //Append data as text to bars
 svg.selectAll("text")
@@ -224,10 +235,5 @@ d3.selectAll("button")
                "x": function(d, i) { return xScale(i) + xScale.rangeBand() / 2; },
                "y": function(d) { return height - yScale(d.value) + 14; }
             });
-
         }
-
-
   });
-
-
